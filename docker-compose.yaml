@@ -1,0 +1,8 @@
+services:
+  game-of-bots:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    container_name: game-of-bots
+    ports:
+      - "8080:8080"
