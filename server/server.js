@@ -4,6 +4,8 @@ const express = require('express');
 const socketio = require('socket.io');
 const pages = require('./pages');
 
+const Logic = require('./game/logic');
+
 const app = express();
 
 const clientPath = path.resolve(`${__dirname}/../client`);
@@ -115,6 +117,9 @@ io.on('connection', (sock) => {
     });
 
     console.log('a user connected ' + sock.id);
+
+    // Launching solo game
+    new Logic([sock]);
 });
 
 server.on('error', (err) => {
