@@ -1,7 +1,7 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
+  "name": "Game of Bots",
+  "version": "0.0.1",
+  "description": "Game of Bots is a web based multiplayer game.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "SEE LICENSE IN ../LICENSE",
   "dependencies": {
     "express": "^4.17.1",
     "query-string": "^7.0.1",
