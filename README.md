@@ -1,4 +1,4 @@
-# ExpressJs setup sample
+# Game of bots
 
 How I decided to do my server setup for developement and the packages installed.  
 Run CMD in the server directory and apply the following commands accordingly.  
@@ -28,3 +28,6 @@ The second function (the 'dev') uses nodemon which will allow for automatic upda
 
 ---
 
+## Branch naming convention
+
+Branches use the `GOB` prefix followed by a dash and the ticket #. So a branch for ticket 1 would be `GOB-1`.
