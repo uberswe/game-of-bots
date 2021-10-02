@@ -1,12 +1,12 @@
 services:
-  gob-server:
+  server:
     build:
       context: ./server
       dockerfile: Dockerfile
     container_name: gob-server
     ports:
       - "8080:8080"
-  gob-client:
+  client:
     build:
       context: ./client
       dockerfile: Dockerfile
