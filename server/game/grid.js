@@ -1,3 +1,4 @@
+
 const Tile = require('./tile');
 const Pathfinder = require('./pathfinder');
 const Resource = require('./resource');
@@ -8,7 +9,7 @@ class Grid {
         this.pathfinder = new Pathfinder();
         this.width = w;
         this.height = h;
-
+      
         this.grid = {}; // dict{[x,y], Tile}
         this.generateGrid();
 
