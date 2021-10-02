@@ -1,8 +1,10 @@
 class Bot {
-    constructor(id, owner, coord) {
-        this.id = id;
-        this.owner = owner;
-        this.coord = coord;
+    constructor(id, owner) {
+        this.id = id; // unique int
+        this.owner = owner; // player id
+
+        this.speed = 1;
+        this.health = 1;
     }
 }
 
