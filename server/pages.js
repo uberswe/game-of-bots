@@ -3,7 +3,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const clientPath = path.resolve(`${__dirname}/../client`);
+const clientPath = path.resolve(`${__dirname}/../client/dist`);
 
 // Middleware
 router.use(function timeLog (req, res, next) {
