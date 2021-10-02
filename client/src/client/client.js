@@ -1,9 +1,12 @@
-class Client {
+import { io } from "socket.io-client";
+
+export class Client {
     sock
     stateListeners = []
 
     run() {
-        this.sock = io();
+        // TODO we need to make http://localhost:8080 an env variable so we can host this baby
+        this.sock = io( 'http://localhost:8080' );
 
         // Create listeners
         this.sock.on("connect", () => {

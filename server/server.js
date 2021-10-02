@@ -12,7 +12,12 @@ console.log(`Serving static from ${clientPath}`);
 app.use(express.static(clientPath));
 
 const server = http.createServer(app);
-const io = socketio(server);
+const io = socketio(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+    }
+});
 
 // Forward routing to seperate class to keep this class cleaner
 app.use('/', pages);
