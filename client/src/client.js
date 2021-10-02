@@ -1,19 +1,37 @@
-console.log("test")
+class Client {
+    sock
+    stateListeners = []
 
-const socket = io();
-socket.on("connect", () => {
-    console.log(socket.id); // x8WIv7-mJelg7on_ALbx
-});
+    run() {
+        this.sock = io();
 
-socket.on("disconnect", () => {
-    console.log(socket.id); // undefined
-});
+        // Create listeners
+        this.sock.on("connect", () => {
+            console.log(this.sock.id);
+        });
 
+        this.sock.on("disconnect", () => {
+            console.log(this.sock.id);
+        });
 
-const input = document.getElementById('input');
-input.addEventListener('click', function (e) {
-    console.log("sent button clicked")
-    socket.emit('message', "button clicked");
-});
+        this.sock.on("state", (obj) => {
+            this.stateListeners.forEach(function (func) {
+            try{
+                func(obj)
+            } catch(e) {
+                console.log(e)
+            }
+            })
+        })
+    }
 
-console.log("client loaded")
+    message(channel, obj) {
+        console.log("sent on channel \"" + channel + "\" with data", obj)
+        this.sock.emit(channel, obj);
+    }
+
+    // Takes a function like func(obj)
+    stateListener(func) {
+        this.stateListeners.push(func)
+    }
+}
