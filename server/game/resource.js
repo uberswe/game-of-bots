@@ -1,11 +1,8 @@
 class Resource {
-    constructor(id) {
-        this.id = id; // unique int
+    constructor(id, coord) {
+        this.id = id;
+        this.coord = coord; // [x, y]
         this.value = 5;
-    }
-
-    getValue(){
-        return this.value;
     }
 }
 
