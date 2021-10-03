@@ -1,13 +1,14 @@
-import { Client } from './client/client'
-import { Canvas } from './canvas/canvas'
+import { Client } from './client'
+import { Canvas } from './canvas'
+import { Turn } from './turn'
 import css from './css/main.css'
 
 let client = new Client()
-client.run()
 let canvas = new Canvas()
-canvas.run()
+let turn = new Turn()
 
 client.stateListener(canvas.update)
+client.stateListener(turn.update)
 
 const deployBot = document.getElementById('deployBot');
 deployBot.addEventListener('click', function (e) {
