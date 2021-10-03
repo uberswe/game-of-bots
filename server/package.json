@@ -1,5 +1,5 @@
 {
-  "name": "Game of Bots",
+  "name": "game-of-bots",
   "version": "0.0.1",
   "description": "Game of Bots is a web based multiplayer game.",
   "main": "server.js",

@@ -4,7 +4,7 @@ export class Client {
     sock
     stateListeners = []
 
-    run() {
+    constructor() {
         // TODO we need to make http://localhost:8080 an env variable so we can host this baby
         this.sock = io( 'http://localhost:8080' );
 
