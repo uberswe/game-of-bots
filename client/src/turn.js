@@ -1,9 +1,6 @@
-import { stateAdapter } from "./util";
-
 export class Turn {
     turnElement
-    currentTurn
-    maxTurns
+    timeRemaining
 
     constructor() {
         this.update = this.update.bind(this)
@@ -11,13 +8,11 @@ export class Turn {
     }
 
     draw() {
-        this.turnElement.innerHTML = "<h3>Turn " + this.currentTurn + "/" + this.maxTurns + "</h3>"
+        this.turnElement.innerHTML = "<h3>Time remaining " + this.timeRemaining + "</h3>"
     }
 
     update(obj) {
-        let adapted = stateAdapter(obj)
-        this.currentTurn = adapted.turn
-        this.maxTurns = adapted.maxTurns
+        this.timeRemaining = obj.timeRemaining
         this.draw()
     }
 }

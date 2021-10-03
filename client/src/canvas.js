@@ -1,6 +1,6 @@
 import Tile from './tile'
 import { Resource } from './resource'
-import { coordToPos, stateAdapter } from "./util";
+import { coordToPos } from "./util";
 
 export class Canvas {
     gridSize = 0;
@@ -27,21 +27,20 @@ export class Canvas {
 
     update(obj) {
         // [this.GRID_SIZE, this.turn, this.maxTurns, this.grid.getResources(), this.grid.getBots()]s
-        let adapted = stateAdapter(obj)
         let ctx = this.ctx
         let tileSize = this.tileSize
         let resources = this.resources
 
         // Draw the grid if gridSize has changed
-        if (this.gridSize !== adapted.gridSize) {
-            this.gridSize = adapted.gridSize
+        if (this.gridSize !== obj.gridSize) {
+            this.gridSize = obj.gridSize
             // adjust the tilesize based on client browser height/width
             this.tileSize = [this.canvas.clientWidth / this.gridSize, this.canvas.clientHeight / this.gridSize]
             this.drawGrid()
         }
 
         // Draw the resources
-        adapted.resources.forEach(function (coord) {
+        obj.resources.forEach(function (coord) {
             let found = false
             resources.forEach(function (existing) {
                 if (existing.coord[0] === coord.x && existing.coord[1] === coord.y) {
@@ -50,7 +49,6 @@ export class Canvas {
             })
             // draw the resource one time
             if (!found) {
-                console.log("drawing new resource")
                 resources.push(new Resource(0, [coord.x, coord.y], ctx, tileSize))
             }
         })
