@@ -1,8 +1,6 @@
-
 const Tile = require('./tile');
 const Pathfinder = require('./pathfinder');
 const Resource = require('./resource');
-const Bot = require('./bot');
 
 class Grid {
     constructor(w, h){
@@ -14,31 +12,25 @@ class Grid {
         this.generateGrid();
 
         this.resources = {}; // dict{[x, y], Resource}
-        this.bots = {}; // dict{[x, y], Bot}
     }
 
-    // getter to retrieve what the player needs
+    // constructor for 'state' update
     getResources(){
-        let resources = [];
-        for (const [key, value] of Object.entries(this.resources)) {
-            resources.push([key], value.value);
+        let result = [];
+        for (const[k, v] of Object.entries(this.resources)){
+            result.push({
+                x: v.coord[0],
+                y: v.coord[1],
+                value: v.value
+            })
         }
-        return resources;
-    }
-
-    // getter to retrieve what the player needs (?add facing and destination)
-    getBots(){
-        let bots = [];
-        for (const [key, value] of Object.entries(this.bots)) {
-            bots.push([key], value.owner);
-        }
-        return bots;
+        return result;
     }
 
     generateGrid(){
         for (let x = 0; x < this.width; x++){
             for (let y = 0; y < this.height; y++){
-                this.grid[[x, y]] = new Tile();
+                this.grid[[x, y]] = new Tile([x, y]);
             }
         }
     }
@@ -58,7 +50,7 @@ class Grid {
             else {
                 console.log("Resource - [" + x + ", " + y + "] with " + count + " re-trys.");
                 // Spawn the resource and update the tile
-                this.resources[[x, y]] = new Resource(this.resources.size);
+                this.resources[[x, y]] = new Resource(this.resources.size, [x, y]);
                 this.grid[[x, y]].occupied = true;
             }
         }

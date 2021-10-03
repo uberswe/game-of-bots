@@ -1,17 +1,35 @@
+const Player = require('./player');
 const Grid = require('./grid');
 
 class Logic {
     constructor(p){
-        const GRID_SIZE = 25;
+        this.GRID_SIZE = 25;
 
-        this.grid = new Grid(GRID_SIZE, GRID_SIZE);
-        this.players = p;
+        this.clients = p;
+        this.players = [];
+        p.forEach(player => {
+            this.players.push(new Player(player.id));
+        });
+
+        this.grid = new Grid(this.GRID_SIZE, this.GRID_SIZE);
         this.turn = 0;
         this.maxTurns = 100;
 
         // Emit initial message and start the game!
         this.updatePlayers();
         this.runGame();
+    }
+
+    // constructor for 'state' update
+    getPlayers(){
+        let result = [];
+        this.players.forEach(player => {
+            result.push({
+                points: player.points,
+                bots: player.getBots()
+            })
+        })
+        return result;
     }
 
     async runGame(){
@@ -47,8 +65,13 @@ class Logic {
     }
 
     updatePlayers() {
-        this.players.forEach(player => {
-            player.emit('state', [this.GRID_SIZE, this.turn, this.maxTurns, this.grid.getResources(), this.grid.getBots()]);
+        this.clients.forEach(client => {
+            client.emit('state', {
+                gridSize: this.GRID_SIZE,
+                timeRemaining: this.maxTurns - this.turn,
+                clients: this.getPlayers(),
+                resources: this.grid.getResources()
+            });
         });
     }
 }
