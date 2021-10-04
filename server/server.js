@@ -33,13 +33,6 @@ io.on('connection', (sock) => {
         io.emit('message', text);
     });
 
-    // This listens for button presses from the frontend
-    sock.on('button', (obj) => {
-        if (obj.hasOwnProperty("click")) {
-            console.log("click in frontend on: " + obj.click, obj)
-        }
-    });
-
     sock.on('disconnect', () => {
         console.log('user disconnected ' + sock.id);
     });

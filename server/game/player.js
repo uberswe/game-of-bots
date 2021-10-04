@@ -1,9 +1,10 @@
 const Bot = require('./bot');
 
 class Player {
-    constructor(id){
+    constructor(id, color){
         this.id = id;
         this.points = 0;
+        this.color = color;
         this.bots = [];
     }
 
