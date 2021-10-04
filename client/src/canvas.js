@@ -26,6 +26,23 @@ export class Canvas {
         }
     }
 
+    // Clear removes everything on the canvas
+    clear() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    drawBots() {
+        this.bots.forEach(function (bot) {
+            bot.draw()
+        })
+    }
+
+    drawResources() {
+        this.resources.forEach(function (resource) {
+            resource.draw()
+        })
+    }
+
     update(obj) {
         // [this.GRID_SIZE, this.turn, this.maxTurns, this.grid.getResources(), this.grid.getBots()]s
         let ctx = this.ctx
@@ -38,11 +55,9 @@ export class Canvas {
             this.gridSize = obj.gridSize
             // adjust the tileSize based on client browser height/width
             this.tileSize = [this.canvas.clientWidth / this.gridSize, this.canvas.clientHeight / this.gridSize]
-            this.drawGrid()
         }
 
         // Draw the bots
-
         obj.clients.forEach(function (client) {
             // TODO get the client color
             client.bots.forEach(function (bot) {
@@ -57,6 +72,23 @@ export class Canvas {
                     bots.push(new Bot(0, [bot.current.x, bot.current.y], ctx, tileSize))
                 }
             })
+        })
+
+        this.bots = bots
+
+        // remove bots not in state
+        this.bots.forEach(function (existing, i) {
+            let found = false
+            obj.clients.forEach(function (client) {
+                client.bots.forEach(function (bot) {
+                    if (bot.current.x === existing.coord[0] && bot.current.y === existing.coord[1]) {
+                        found = true
+                    }
+                })
+            })
+            if (!found) {
+                delete bots[i]
+            }
         })
 
         this.bots = bots
@@ -91,6 +123,12 @@ export class Canvas {
         })
 
         this.resources = resources
+
+        // Draw
+        this.clear()
+        this.drawGrid()
+        this.drawBots()
+        this.drawResources()
     }
 
 

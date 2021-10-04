@@ -11,10 +11,10 @@ export class Resource {
         this.coord = coord;
         this.ctx = ctx;
         this.tileSize = tileSize
-        this.draw(coordToPos(coord[0], coord[1], this.tileSize));
     }
 
-    draw(coord){
+    draw(){
+        let coord = coordToPos(this.coord[0], this.coord[1], this.tileSize)
         // Gold circles to indicate resources
         this.ctx.beginPath();
         this.ctx.arc(coord[0], coord[1], this.tileSize[0]/4, 0, 2 * Math.PI);

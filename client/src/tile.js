@@ -24,6 +24,10 @@ class Tile {
 
         // This draws the second line
         this.ctx.lineTo(x + w/2, y + h/2);
+
+        // Style
+        this.ctx.lineWidth = 1
+        this.ctx.strokeStyle = "#000000";
         this.ctx.stroke();
 
         // Finish path
