@@ -11,12 +11,14 @@ export class Bot {
         this.coord = coord;
         this.ctx = ctx;
         this.tileSize = tileSize
-        this.draw(coordToPos(coord[0], coord[1], this.tileSize), this.tileSize[0], this.tileSize[1]);
     }
 
-    draw(coords, w, h){
-        let x = coords[0]
-        let y = coords[1]
+    draw(){
+        let coord = coordToPos(this.coord[0], this.coord[1], this.tileSize)
+        let w = this.tileSize[0]
+        let h = this.tileSize[1]
+        let x = coord[0]
+        let y = coord[1]
         // Blue Trapazoid
         w = w - w/3
         h = h - h/3
@@ -36,10 +38,6 @@ export class Bot {
     }
 
     move(x, y){
-
-    }
-
-    remove(){
 
     }
 }
