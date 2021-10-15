@@ -45,4 +45,8 @@ export class Client {
     stateListener(func) {
         this.stateListeners.push(func)
     }
+
+    clearListeners() {
+        this.stateListeners = []
+    }
 }

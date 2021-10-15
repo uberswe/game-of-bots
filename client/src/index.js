@@ -20,11 +20,12 @@ playGame.addEventListener('click', function (e) {
 });
 
 
-
+window.addEventListener('load', function () {
 // If the game is already running we start the game
-if (state.getGameIsRunning() === "true") {
-    startGame()
-}
+    if (state.getGameIsRunning() === "true") {
+        startGame()
+    }
+})
 
 function startGame() {
     if (!gameStarted) {
@@ -76,10 +77,11 @@ function startGame() {
             })
             gc.classList.add("hidden");
 
+            client.clearListeners()
+            client = undefined
             canvas = undefined
             turn = undefined
             scores = undefined
-            client = undefined
             gameStarted = false
             state.setGameIsRunning("false")
 

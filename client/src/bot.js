@@ -13,7 +13,8 @@ export class Bot {
         this.tileSize = tileSize
     }
 
-    draw(){
+    draw(tileSize){
+        this.tileSize = tileSize
         let coord = coordToPos(this.coord[0], this.coord[1], this.tileSize)
         let w = this.tileSize[0]
         let h = this.tileSize[1]

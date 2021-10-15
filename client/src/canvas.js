@@ -32,14 +32,16 @@ export class Canvas {
     }
 
     drawBots() {
+        let tileSize = this.tileSize
         this.bots.forEach(function (bot) {
-            bot.draw()
+            bot.draw(tileSize)
         })
     }
 
     drawResources() {
+        let tileSize = this.tileSize
         this.resources.forEach(function (resource) {
-            resource.draw()
+            resource.draw(tileSize)
         })
     }
 

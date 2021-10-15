@@ -13,7 +13,8 @@ export class Resource {
         this.tileSize = tileSize
     }
 
-    draw(){
+    draw(tileSize){
+        this.tileSize = tileSize
         let coord = coordToPos(this.coord[0], this.coord[1], this.tileSize)
         // Gold circles to indicate resources
         this.ctx.beginPath();

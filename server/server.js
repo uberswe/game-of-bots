@@ -40,7 +40,33 @@ io.on('connection', (sock) => {
             console.log("click in frontend on: " + obj.click, obj)
             if (obj.click === "play") {
                 // Launching solo game
-                games.push(new Logic([sock], obj.clientId))
+                let gameIsRunning = false
+                for (let gi in games) {
+                    if (games[gi].getTurnsLeft() > 0) {
+                        gameIsRunning = true
+                        let playerFound = false
+                        for (let pi in games[gi].players) {
+                            if (games[gi].players[pi].id === obj.clientId) {
+                                playerFound = true
+                                let socketFound = false
+                                games[gi].players[pi].sockets.forEach(function (socket) {
+                                    if (socket.id === sock.id) {
+                                        socketFound = true
+                                    }
+                                })
+                                if (!socketFound) {
+                                    games[gi].players[pi].addSocket(sock)
+                                }
+                            }
+                        }
+                        if (!playerFound) {
+                            games[gi].addPlayer({ sock: sock, clientId: obj.clientId })
+                        }
+                    }
+                }
+                if (!gameIsRunning) {
+                    games.push(new Logic([{ sock: sock, clientId: obj.clientId }]))
+                }
             }
             if (obj.click === "end") {
                 // remove solo game
