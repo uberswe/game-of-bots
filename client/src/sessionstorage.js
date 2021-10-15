@@ -10,7 +10,11 @@ export class SessionStorage {
     }
 
     get(key) {
-        this.sessionStorage.getItem(key);
+        return this.sessionStorage.getItem(key);
+    }
+
+    has(key) {
+        return !(this.sessionStorage.getItem(key) == null)
     }
 
     remove(key) {
