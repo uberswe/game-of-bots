@@ -3,25 +3,14 @@ const Grid = require('./grid');
 const Bot = require('./bot');
 
 class Logic {
-    constructor(p){
+    constructor(p) {
         this.TICK_RATE = 1000;
         this.GRID_SIZE = 25;
         this.COLOR_COUNT = 0;
 
-        this.clients = p;
         this.players = [];
         p.forEach(player => {
-            this.players.push(new Player(player.id, this.assignColor()));
-
-            // This listens to the button clicks on the front end
-            player.on('button', (obj) => {
-                if (obj.hasOwnProperty("click")) {
-                    console.log("click in frontend on: " + obj.click, obj)
-                    if (obj.click == "deploy"){
-                        this.requestBotSpawn(player);
-                    }
-                }
-            })
+            this.addPlayer(player)
         });
 
         this.grid = new Grid(this.GRID_SIZE, this.GRID_SIZE);
@@ -36,8 +25,26 @@ class Logic {
         this.runGame();
     }
 
+    getTurnsLeft() {
+        return this.maxTurns - this.turn
+    }
+
+    addPlayer(player) {
+        this.players.push(new Player(player.clientId, player.sock, this.assignColor()));
+
+        // This listens to the button clicks on the front end
+        player.sock.on('button', (obj) => {
+            if (obj.hasOwnProperty("click")) {
+                console.log("click in frontend on: " + obj.click, obj)
+                if (obj.click === "deploy") {
+                    this.requestBotSpawn(player);
+                }
+            }
+        })
+    }
+
     // constructor for 'state' update
-    getPlayers(){
+    getPlayers() {
         let result = [];
         this.players.forEach(player => {
             result.push({
@@ -50,37 +57,35 @@ class Logic {
         return result;
     }
 
-    requestBotSpawn(user){
+    requestBotSpawn(user) {
         // Get the requesting users player in-game
         let player = null;
         this.players.forEach(p => {
-            if (p.id == user.id){
+            if (p.id === user.clientId) {
                 player = p;
             }
         });
 
-        if (player != null){
+        if (player != null) {
             // Attempt to find a free location to spawn the bot
             let coord = this.grid.getAvailableSpawnTile(this.reservedSpawn);
-            
-            if (coord != null){
+
+            if (coord != null) {
                 console.log("(logic.js) - TODO: Put the player on CD");
                 this.reservedSpawn[coord] = player;
-            }
-            else {
+            } else {
                 console.error("(logic.js) - Free spawn location not found!");
             }
-        }
-        else {
+        } else {
             console.error("(logic.js) - Player null!");
         }
     }
 
-    spawnBots(){
-        for (const[k, v] of Object.entries(this.reservedSpawn)){
+    spawnBots() {
+        for (const [k, v] of Object.entries(this.reservedSpawn)) {
             let id = this.botID;
             this.botID += 1;
-            
+
             // Player adds a bot with unique id and the array [x, y] pos
             let pos = k.split(',').map(Number);
             v.addBot(id, pos);
@@ -90,7 +95,7 @@ class Logic {
         this.reservedSpawn = {};
     }
 
-    activateBots(){
+    activateBots() {
         // TODO: if increased speed implemented, this needs to check hits with each move
         this.players.forEach(player => {
             player.bots.forEach(bot => {
@@ -99,8 +104,8 @@ class Logic {
         });
     }
 
-    async runGame(){
-        while(this.turn < this.maxTurns){
+    async runGame() {
+        while (this.turn < this.maxTurns) {
             await this.waitForTick();
             this.calculateTurn();
             this.updatePlayers();
@@ -109,49 +114,56 @@ class Logic {
         this.gameOver();
     }
 
-    waitForTick(){
+    endGame() {
+        this.turn = this.maxTurns
+    }
+
+    waitForTick() {
         return new Promise(resolve => setTimeout(resolve, this.TICK_RATE));
     }
 
-    calculateTurn(){
+    calculateTurn() {
         console.log("Turn processing...");
         // Spawn Resources
-        if (this.turn % 5 == 0){
+        if (this.turn % 5 === 0) {
             this.grid.spawnResource(0);
         }
         // Spawn bots
-        if (Object.keys(this.reservedSpawn).length > 0){
+        if (Object.keys(this.reservedSpawn).length > 0) {
             this.spawnBots();
         }
         // Bot updates
         this.activateBots();
-        
+
         this.turn++;
     }
 
-    gameOver(){
+    gameOver() {
         console.log("Game Over!");
         // Calculate who won...
     }
 
     updatePlayers() {
-        this.clients.forEach(client => {
-            client.emit('state', {
-                tickRate: this.TICK_RATE,
-                gridSize: this.GRID_SIZE,
-                timeRemaining: this.maxTurns - this.turn,
-                clients: this.getPlayers(),
-                resources: this.grid.getResources()
+        this.players.forEach(player => {
+            player.sockets.forEach(client => {
+                client.emit('state', {
+                    tickRate: this.TICK_RATE,
+                    gridSize: this.GRID_SIZE,
+                    timeRemaining: this.maxTurns - this.turn,
+                    clients: this.getPlayers(),
+                    resources: this.grid.getResources()
+                });
             });
         });
     }
 
-    assignColor(){
+    assignColor() {
         function c() {
-            var hex = Math.floor(Math.random()*256).toString(16);
-            return ("0"+String(hex)).substr(-2); // pad with zero
+            var hex = Math.floor(Math.random() * 256).toString(16);
+            return ("0" + String(hex)).substr(-2); // pad with zero
         }
-        return "#"+c()+c()+c();
+
+        return "#" + c() + c() + c();
     }
 }
 

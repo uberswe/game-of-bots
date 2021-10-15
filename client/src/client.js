@@ -6,8 +6,8 @@ export class Client {
     stateListeners = []
     state
 
-    constructor() {
-        this.state = new State()
+    constructor(state) {
+        this.state = state
 
         // TODO we need to make http://localhost:8080 an env variable so we can host this baby
         this.sock = io( 'http://localhost:8080' );
@@ -44,5 +44,9 @@ export class Client {
     // Takes a function like func(obj)
     stateListener(func) {
         this.stateListeners.push(func)
+    }
+
+    clearListeners() {
+        this.stateListeners = []
     }
 }
