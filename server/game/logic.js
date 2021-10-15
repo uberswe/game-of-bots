@@ -2,7 +2,8 @@ const Player = require('./player');
 const Grid = require('./grid');
 
 class Logic {
-    constructor(p){
+    constructor(p, clientId){
+        this.clientId = clientId
         this.GRID_SIZE = 25;
 
         this.clients = p;
@@ -40,6 +41,10 @@ class Logic {
         }
 
         this.gameOver();
+    }
+
+    endGame() {
+        this.turn = this.maxTurns
     }
 
     waitForTick(){

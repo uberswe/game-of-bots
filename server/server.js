@@ -7,6 +7,7 @@ const pages = require('./pages');
 const Logic = require('./game/logic');
 
 const app = express();
+let games = []
 
 const clientPath = path.resolve(`${__dirname}/../client`);
 console.log(`Serving static from ${clientPath}`);
@@ -37,6 +38,18 @@ io.on('connection', (sock) => {
     sock.on('button', (obj) => {
         if (obj.hasOwnProperty("click")) {
             console.log("click in frontend on: " + obj.click, obj)
+            if (obj.click === "play") {
+                // Launching solo game
+                games.push(new Logic([sock], obj.clientId))
+            }
+            if (obj.click === "end") {
+                // remove solo game
+                const index = games.findIndex(instance => instance.clientId === obj.clientId);
+                if (index > -1) {
+                    games[index].endGame()
+                    games.splice(index, 1);
+                }
+            }
         }
     });
 
@@ -45,9 +58,6 @@ io.on('connection', (sock) => {
     });
 
     console.log('a user connected ' + sock.id);
-
-    // Launching solo game
-    new Logic([sock]);
 });
 
 server.on('error', (err) => {
