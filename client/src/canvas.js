@@ -1,6 +1,7 @@
 import Tile from './tile'
 import { Resource } from './resource'
-import { coordToPos } from "./util";
+import { coordToPos } from './util'
+import { Bot } from './bot'
 
 export class Canvas {
     gridSize = 0;
@@ -25,19 +26,72 @@ export class Canvas {
         }
     }
 
+    // Clear removes everything on the canvas
+    clear() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    drawBots() {
+        this.bots.forEach(function (bot) {
+            bot.draw()
+        })
+    }
+
+    drawResources() {
+        this.resources.forEach(function (resource) {
+            resource.draw()
+        })
+    }
+
     update(obj) {
         // [this.GRID_SIZE, this.turn, this.maxTurns, this.grid.getResources(), this.grid.getBots()]s
         let ctx = this.ctx
         let tileSize = this.tileSize
         let resources = this.resources
+        let bots = this.bots
 
         // Draw the grid if gridSize has changed
         if (this.gridSize !== obj.gridSize) {
             this.gridSize = obj.gridSize
-            // adjust the tilesize based on client browser height/width
+            // adjust the tileSize based on client browser height/width
             this.tileSize = [this.canvas.clientWidth / this.gridSize, this.canvas.clientHeight / this.gridSize]
-            this.drawGrid()
         }
+
+        // Draw the bots
+        obj.clients.forEach(function (client) {
+            // TODO get the client color
+            client.bots.forEach(function (bot) {
+                let found = false
+                bots.forEach(function (existing) {
+                    if (existing.coord[0] === bot.current.x && existing.coord[1] === bot.current.y) {
+                        found = true
+                    }
+                })
+                // draw the resource one time
+                if (!found) {
+                    bots.push(new Bot(0, [bot.current.x, bot.current.y], ctx, tileSize))
+                }
+            })
+        })
+
+        this.bots = bots
+
+        // remove bots not in state
+        this.bots.forEach(function (existing, i) {
+            let found = false
+            obj.clients.forEach(function (client) {
+                client.bots.forEach(function (bot) {
+                    if (bot.current.x === existing.coord[0] && bot.current.y === existing.coord[1]) {
+                        found = true
+                    }
+                })
+            })
+            if (!found) {
+                delete bots[i]
+            }
+        })
+
+        this.bots = bots
 
         // Draw the resources
         obj.resources.forEach(function (coord) {
@@ -52,6 +106,29 @@ export class Canvas {
                 resources.push(new Resource(0, [coord.x, coord.y], ctx, tileSize))
             }
         })
+
+        this.resources = resources
+
+        // remove resources not in state
+        this.resources.forEach(function (existing, i) {
+            let found = false
+            obj.resources.forEach(function (coord) {
+                if (existing.coord[0] === coord.x && existing.coord[1] === coord.y) {
+                    found = true
+                }
+            })
+            if (!found) {
+                delete resources[i]
+            }
+        })
+
+        this.resources = resources
+
+        // Draw
+        this.clear()
+        this.drawGrid()
+        this.drawBots()
+        this.drawResources()
     }
 
 
