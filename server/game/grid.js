@@ -1,4 +1,5 @@
 const Tile = require('./tile');
+const Bot = require('./bot');
 const Pathfinder = require('./pathfinder');
 const Resource = require('./resource');
 
@@ -35,28 +36,82 @@ class Grid {
         }
     }
 
-    spawnResource(count){
-        let max_x = this.width - 6;
-        let max_y = this.height - 6;
+    getAvailableSpawnTile(reservedTiles){
 
-        let x = this.getRandomInt(max_x) + 3;
-        let y = this.getRandomInt(max_y) + 3;
+        // Create a pool of the possible spawn
+        let y = this.height - 1;
+        let max_x = this.width;
 
-        if (count < 5) {
-            if (this.grid[[x, y]].occupied){
-                count += 1;
-                this.spawnResource(count);
+        let tilePool = [];
+        for (let x = 0; x < max_x; x++){
+            tilePool.push([x, y]);
+        }
+
+        // Remove any tiles from the pool already in use
+        if (reservedTiles != null){
+            for (const[k, v] of Object.entries(reservedTiles)){
+                if (tilePool.includes(k[0])){
+                    tilePool = tilePool.filter( function(e) { return e !== k[0] });
+                }
             }
-            else {
+        }
+
+        tilePool.forEach(tileCoord => {
+            if (this.grid[tileCoord].occupied || !this.grid[tileCoord].walkable){
+                tilePool = tilePool.filter( function(e) { return e !== tileCoord });
+            }
+        });
+
+        // return a random tile if the pool still contains any
+        if (tilePool.length > 0){
+            let rand = this.getRandomInt(tilePool.length);
+            return tilePool[rand];
+        }
+        console.log("(grid.js) - Spawn location not found for request.");
+        return null;
+    }
+
+    spawnResource(count){
+        if (count < 5) {
+
+            let max_x = this.width - 6;
+            let max_y = this.height - 6;
+
+            let x = this.getRandomInt(max_x) + 3;
+            let y = this.getRandomInt(max_y) + 3;
+
+            if (!this.grid[[x, y]].occupied && this.grid[[x, y]].walkable){
                 console.log("Resource - [" + x + ", " + y + "] with " + count + " re-trys.");
                 // Spawn the resource and update the tile
                 this.resources[[x, y]] = new Resource(this.resources.size, [x, y]);
                 this.grid[[x, y]].occupied = true;
             }
+            else {
+                count += 1;
+                this.spawnResource(count);
+            }
         }
         else {
             console.log("Resource spawning failed to find open space!");
         }
+    }
+
+    activateBot(bot){
+        if (bot.hasDestination()){
+            // Move along the path and check for collisions
+            this.grid[bot.pos].occupied = false;
+            bot.move();
+            this.grid[bot.pos].occupied = true;
+        }
+        else {
+            // Get a new destination and move next round
+            bot.path = this.getDestination(bot.pos);
+        }
+    }
+
+    getDestination(pos){
+        // TODO: Randomly select on of the resources
+        return this.pathfinder.calculatePath(pos, [pos[0], 0]);
     }
 
     getRandomInt(max) {

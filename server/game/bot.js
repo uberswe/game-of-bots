@@ -6,11 +6,16 @@ class Bot {
         this.health = 1;
 
         this.pos = pos;
-        this.destination = null;
+        this.path = [];
     }
 
     hasDestination(){
-        return this.destination != null;
+        return this.path.length > 0;
+    }
+
+    move(){
+        this.pos = this.path[0];
+        this.path.shift();
     }
 }
 
