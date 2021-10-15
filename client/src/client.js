@@ -1,16 +1,23 @@
 import { io } from "socket.io-client";
+import { State } from "./state";
 
 export class Client {
     sock
     stateListeners = []
+    state
 
     constructor() {
+        this.state = new State()
+
         // TODO we need to make http://localhost:8080 an env variable so we can host this baby
         this.sock = io( 'http://localhost:8080' );
 
         // Create listeners
         this.sock.on("connect", () => {
             console.log(this.sock.id);
+            this.message("client", {
+                "status":"connected"
+            })
         });
 
         this.sock.on("disconnect", () => {
@@ -29,6 +36,7 @@ export class Client {
     }
 
     message(channel, obj) {
+        obj.clientID = this.state.getUserID()
         console.log("sent on channel \"" + channel + "\" with data", obj)
         this.sock.emit(channel, obj);
     }
