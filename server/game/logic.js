@@ -35,7 +35,6 @@ class Logic {
         // This listens to the button clicks on the front end
         player.sock.on('button', (obj) => {
             if (obj.hasOwnProperty("click")) {
-                console.log("click in frontend on: " + obj.click, obj)
                 if (obj.click === "deploy") {
                     this.requestBotSpawn(player);
                 }
@@ -71,8 +70,7 @@ class Logic {
             let coord = this.grid.getAvailableSpawnTile(this.reservedSpawn);
 
             if (coord != null) {
-                console.log("(logic.js) - TODO: Put the player on CD");
-                this.reservedSpawn[coord] = player;
+                this.reservedSpawn[coord.x + "," + coord.y] = player;
             } else {
                 console.error("(logic.js) - Free spawn location not found!");
             }
@@ -82,6 +80,7 @@ class Logic {
     }
 
     spawnBots() {
+        console.log(this.reservedSpawn);
         for (const [k, v] of Object.entries(this.reservedSpawn)) {
             let id = this.botID;
             this.botID += 1;
@@ -134,6 +133,9 @@ class Logic {
         }
         // Bot updates
         this.activateBots();
+
+        // Bot check if on top of resource or colliding
+        //console.log("(logic.js) - TODO: Check if bot is on resource.");
 
         this.turn++;
     }
