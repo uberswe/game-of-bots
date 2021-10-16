@@ -1,8 +1,8 @@
 import { Client } from './client'
 import { Canvas } from './canvas'
 import { Turn } from './turn'
-import css from './css/main.css'
 import {Scores} from "./scores";
+import css from './css/main.css'
 import { GameComponent } from "./templates/game"
 import { introComponent } from "./templates/intro"
 import {State} from "./state";

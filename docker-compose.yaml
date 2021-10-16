@@ -1,15 +1,7 @@
 services:
   server:
     build:
-      context: ./server
-      dockerfile: Dockerfile
-    container_name: gob-server
+      context: .
+    container_name: game-of-bots-server
     ports:
       - "8080:8080"
-  client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    container_name: gob-client
-    ports:
-      - "8081:80"
