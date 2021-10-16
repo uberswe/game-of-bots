@@ -5,9 +5,11 @@ export class Bot {
     id
     coord
     tileSize
+    color
 
-    constructor(id, coord, ctx, tileSize){
+    constructor(id, coord, ctx, tileSize, color){
         this.id = id;
+        this.color = color
         this.coord = coord;
         this.ctx = ctx;
         this.tileSize = tileSize
@@ -31,9 +33,9 @@ export class Bot {
         this.ctx.lineTo((x - w/2) + (w/8), y - h/2);
         // Navy blue
         this.ctx.lineWidth = 1
-        this.ctx.fillStyle = "#000080"
+        this.ctx.fillStyle = this.color
         this.ctx.fill();
-        this.ctx.strokeStyle = "#000080";
+        this.ctx.strokeStyle = this.color;
         this.ctx.stroke();
         this.ctx.closePath();
     }
