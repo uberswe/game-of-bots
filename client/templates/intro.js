@@ -3,7 +3,7 @@ class IntroComponent extends HTMLElement {
         this.innerHTML = `<div class="intro-container">
                 <h1>Game of bots</h1>
                 <button id="playGame">Play</button>
-                <p>This site uses cookies (<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage">session storage</a>), by clicking play you agree to use these cookies.</p>
+                <p>This site uses cookies (<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage">session storage</a>), by clicking "play" you agree to use these cookies.</p>
                 <h3>How to play?</h3>
                 <p>
                     The goal of the game is to try to acquire more resources than your opponents before the time runs out.
