@@ -9,8 +9,7 @@ export class Client {
     constructor(state) {
         this.state = state
 
-        // TODO we need to make http://localhost:8080 an env variable so we can host this baby
-        this.sock = io( 'http://localhost:8080' );
+        this.sock = io( process.env.SERVER_HOST || "http://localhost:8080" );
 
         // Create listeners
         this.sock.on("connect", () => {

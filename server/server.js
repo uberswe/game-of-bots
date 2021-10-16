@@ -1,9 +1,10 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const http = require('http');
 const path = require('path');
 const express = require('express');
 const socketio = require('socket.io');
 const pages = require('./pages');
-
 const Logic = require('./game/logic');
 
 const app = express();
@@ -90,6 +91,8 @@ server.on('error', (err) => {
     console.error('Server error:', err);
 });
 
-server.listen(8080, () => {
-    console.log('Server listening on 8080');
+const PORT = process.env.PORT || 8080;
+
+server.listen(PORT, () => {
+    console.log('Server listening on ' + PORT);
 });
