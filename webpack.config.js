@@ -1,10 +1,12 @@
 const path = require('path');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
-    entry: './src/index.js',
+    name: 'client side, output to ./public',
+    entry: './client/index.js',
     output: {
         filename: 'main.js',
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'public'),
     },
     module: {
         rules: [
@@ -14,8 +16,7 @@ module.exports = {
             },
         ],
     },
-    devServer: {
-        static: './dist',
-        port: 8081,
-    },
+    plugins: [
+        new Dotenv()
+    ],
 };

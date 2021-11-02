@@ -1,15 +1,44 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const http = require('http');
 const path = require('path');
 const express = require('express');
 const socketio = require('socket.io');
 const pages = require('./pages');
-
 const Logic = require('./game/logic');
+const Dotenv = require('dotenv-webpack');
 
 const app = express();
+const webpack = require('webpack');
+const middleware = require('webpack-dev-middleware'); //webpack hot reloading middleware
+const compiler = webpack({
+    mode: process.env.NODE_ENV,
+    name: 'client side, output to ./public',
+    entry: './client/index.js',
+    output: {
+        filename: 'main.js',
+        path: path.resolve(__dirname, 'public'),
+    },
+    module: {
+        rules: [
+            {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"],
+            },
+        ],
+    },
+    plugins: [
+        new Dotenv()
+    ],
+});
+
+app.use(middleware(compiler, {
+    // webpack-dev-middleware options
+}));
+
 let games = []
 
-const clientPath = path.resolve(`${__dirname}/../client`);
+const clientPath = path.resolve(`${__dirname}/../public`);
 console.log(`Serving static from ${clientPath}`);
 
 app.use(express.static(clientPath));
@@ -90,6 +119,8 @@ server.on('error', (err) => {
     console.error('Server error:', err);
 });
 
-server.listen(8080, () => {
-    console.log('Server listening on 8080');
+const PORT = process.env.PORT || 8080;
+
+server.listen(PORT, () => {
+    console.log('Server listening on ' + PORT);
 });

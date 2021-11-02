@@ -1,0 +1,31 @@
+{
+  "name": "game-of-bots",
+  "version": "0.0.1",
+  "description": "Game of Bots is a web based multiplayer game.",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "SEE LICENSE IN ./LICENSE",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "query-string": "^7.0.1",
+    "socket.io": "^4.2.0",
+    "socket.io-client": "^4.2.0",
+    "webpack-dev-middleware": "^5.2.1"
+  },
+  "devDependencies": {
+    "css-loader": "^6.3.0",
+    "dotenv-webpack": "^7.0.3",
+    "nodemon": "^2.0.13",
+    "style-loader": "^3.3.0",
+    "webpack": "^5.56.0",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.3.0"
+  }
+}
