@@ -78,7 +78,9 @@ function startGame() {
             gc.classList.add("hidden");
 
             client.clearListeners()
+            client.disconnect()
             client = undefined
+            canvas.clear()
             canvas = undefined
             turn = undefined
             scores = undefined
