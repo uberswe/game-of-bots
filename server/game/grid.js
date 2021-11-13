@@ -124,7 +124,6 @@ class Grid {
                 }
             }
 
-            console.log("test get dest!");
             // With no match get a new destination and move next round
             bot.path = this.getDestination(bot.pos);
         }
@@ -148,7 +147,6 @@ class Grid {
             dest = [(this.width/2), (this.height/2)];
         }
 
-        console.log("test find a path!");
         let pathfinder = new Pathfinder();
         return pathfinder.findPath(this.width, this.height, this.grid, this.grid[[pos]], this.grid[[dest]]);
     }
