@@ -21,6 +21,11 @@ class Logic {
         this.botID = 0; // unique id, increments with each bot spawned
         this.reservedSpawn = {}; // dict{[x, y], player}
 
+        // Buildup (1 per player per tick)
+        this.resourceBuildup = 0;
+        // When Buildup above cap (spawn resources as long as you can subract cap from buildup)
+        this.resourceBuildupCap = 5;
+
         // Emit initial message and start the game!
         this.updatePlayers();
         this.runGame();
