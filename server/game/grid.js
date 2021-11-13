@@ -1,11 +1,9 @@
 const Tile = require('./tile');
-const Bot = require('./bot');
 const Pathfinder = require('./pathfinder');
 const Resource = require('./resource');
 
 class Grid {
     constructor(w, h){
-        this.pathfinder = new Pathfinder();
         this.width = w;
         this.height = h;
       
@@ -13,6 +11,7 @@ class Grid {
         this.generateGrid();
 
         this.resources = {}; // dict{[x, y], Resource}
+        this.resourceID = 0;
     }
 
     // constructor for 'state' update
@@ -37,28 +36,33 @@ class Grid {
     }
 
     getAvailableSpawnTile(reservedTiles){
-
         // Create a pool of the possible spawn
         let y = this.height - 1;
         let max_x = this.width;
 
         let tilePool = [];
         for (let x = 0; x < max_x; x++){
-            tilePool.push([x, y]);
+            tilePool.push({ "x":x, "y":y });
         }
-
+        
         // Remove any tiles from the pool already in use
-        if (reservedTiles != null){
-            for (const[k, v] of Object.entries(reservedTiles)){
-                if (tilePool.includes(k[0])){
-                    tilePool = tilePool.filter( function(e) { return e !== k[0] });
-                }
+        for (const[k, v] of Object.entries(reservedTiles)){
+            let pos = [k.split(',').map(Number)];
+
+            const index = tilePool.indexOf({"x":pos[0], "y":pos[1]});
+            if (index > -1){
+                console.log("Match found! (reserved)");
+                tilePool.splice(index, 1);
             }
         }
-
+        
         tilePool.forEach(tileCoord => {
-            if (this.grid[tileCoord].occupied || !this.grid[tileCoord].walkable){
-                tilePool = tilePool.filter( function(e) { return e !== tileCoord });
+            if (this.grid[[tileCoord.x, tileCoord.y]].occupied || !this.grid[[tileCoord.x, tileCoord.y]].walkable){
+                const index = tilePool.indexOf({"x":tileCoord.x, "y":tileCoord.y});
+                if (index > -1){
+                    console.log("Match found! (occupied/walkable)");
+                    tilePool.splice(index, 1);
+                }
             }
         });
 
@@ -81,9 +85,9 @@ class Grid {
             let y = this.getRandomInt(max_y) + 3;
 
             if (!this.grid[[x, y]].occupied && this.grid[[x, y]].walkable){
-                console.log("Resource - [" + x + ", " + y + "] with " + count + " re-trys.");
+                //console.log("Resource - [" + x + ", " + y + "] with " + count + " re-trys.");
                 // Spawn the resource and update the tile
-                this.resources[[x, y]] = new Resource(this.resources.size, [x, y]);
+                this.resources[[x, y]] = new Resource(this.resourceID++, [x, y]);
                 this.grid[[x, y]].occupied = true;
             }
             else {
@@ -92,26 +96,61 @@ class Grid {
             }
         }
         else {
-            console.log("Resource spawning failed to find open space!");
+            console.log("(grid.js) - Resource spawning failed to find open space!");
         }
     }
 
     activateBot(bot){
+        if (bot.dying){
+            return;
+        }
+
         if (bot.hasDestination()){
-            // Move along the path and check for collisions
-            this.grid[bot.pos].occupied = false;
+            // Move along the path
             bot.move();
-            this.grid[bot.pos].occupied = true;
         }
         else {
-            // Get a new destination and move next round
+            // Check if bot on resource
+            for (const[k, v] of Object.entries(this.resources)){
+                let pos = k.split(',').map(Number);
+                let bX = bot.pos[0];
+                let bY = bot.pos[1];
+                let x = pos[0];
+                let y = pos[1];
+                if (bX == x && bY == y){
+                    let value = v.value;
+                    // remove resource
+                    delete this.resources[k];
+                    // return the value to give to player
+                    return value;
+                }
+            }
+
+            // With no match get a new destination and move next round
             bot.path = this.getDestination(bot.pos);
         }
     }
 
     getDestination(pos){
-        // TODO: Randomly select on of the resources
-        return this.pathfinder.calculatePath(pos, [pos[0], 0]);
+        let pool = [];
+        // Add all resources location to pool
+        for (const[k, v] of Object.entries(this.resources)){
+            let poolPos = k.split(',').map(Number);
+            pool.push(poolPos);
+        }
+
+        let dest;
+        if (pool.length > 0){
+            //Randomly select one of the destinations to go to
+            dest = pool[this.getRandomInt(pool.length)];
+        }
+        else {
+            // Default destination if no resource available
+            dest = [(this.width/2), (this.height/2)];
+        }
+
+        let pathfinder = new Pathfinder();
+        return pathfinder.findPath(this.width, this.height, this.grid, this.grid[[pos]], this.grid[[dest]]);
     }
 
     getRandomInt(max) {

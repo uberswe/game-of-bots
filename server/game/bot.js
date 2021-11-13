@@ -7,14 +7,19 @@ class Bot {
 
         this.pos = pos;
         this.path = [];
+
+        this.dying = false;
     }
 
     hasDestination(){
+        if (typeof this.path == 'undefined'){
+            return false;
+        }
         return this.path.length > 0;
     }
 
     move(){
-        this.pos = this.path[0];
+        this.pos = this.path[0].coord;
         this.path.shift();
     }
 }

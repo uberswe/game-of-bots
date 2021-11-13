@@ -19,14 +19,24 @@ class Player {
     getBots(){
         let result = [];
         this.bots.forEach(bot => {
+            let destX, destY;
+            if (typeof bot.path !== 'undefined'){
+                destX = bot.path[0];
+                destY = bot.path[1];
+            }
+            else {
+                destX = 0;
+                destY = 0;
+            }
+
             result.push({
                 current: {
                     x: bot.pos[0],
                     y: bot.pos[1]
                 },
                 movingTo: {
-                    x: bot.path[0],
-                    y: bot.path[1]
+                    x: destX,
+                    y: destY
                 },
                 state: "moving"
             })
@@ -36,6 +46,15 @@ class Player {
 
     addBot(id, pos){
         this.bots.push(new Bot(id, pos));
+    }
+
+    deleteBot(bot){
+        for (let i = 0; i < this.bots.length; i++){
+            if (bot.id == this.bots[i].id){
+                this.bots.splice(i, 1);
+                return;
+            }
+        }
     }
 }
 
