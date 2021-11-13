@@ -30,6 +30,7 @@ class Player {
             }
 
             result.push({
+                id: bot.id,
                 current: {
                     x: bot.pos[0],
                     y: bot.pos[1]

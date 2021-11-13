@@ -14,6 +14,7 @@ class Logic {
         });
 
         this.grid = new Grid(this.GRID_SIZE, this.GRID_SIZE);
+        this.countdown = 30;
         this.turn = 0;
         this.maxTurns = 600;
 
@@ -58,30 +59,35 @@ class Logic {
 
     requestBotSpawn(user) {
         // Get the requesting users player in-game
-        let player = null;
-        this.players.forEach(p => {
-            if (p.id === user.clientId) {
-                player = p;
-            }
-        });
-
-        if (player != null) {
-            if (player.points >= 5){
-                // Attempt to find a free location to spawn the bot
-                let coord = this.grid.getAvailableSpawnTile(this.reservedSpawn);
-
-                if (coord != null) {
-                    this.reservedSpawn[coord.x + "," + coord.y] = player;
-                    player.points = player.points - 5;
-                } else {
-                    console.error("(logic.js) - Free spawn location not found!");
+        if (this.countdown < 1){
+            let player = null;
+            this.players.forEach(p => {
+                if (p.id === user.clientId) {
+                    player = p;
                 }
+            });
+
+            if (player != null) {
+                if (player.points >= 5){
+                    // Attempt to find a free location to spawn the bot
+                    let coord = this.grid.getAvailableSpawnTile(this.reservedSpawn);
+
+                    if (coord != null) {
+                        this.reservedSpawn[coord.x + "," + coord.y] = player;
+                        player.points = player.points - 5;
+                    } else {
+                        console.error("(logic.js) - Free spawn location not found!");
+                    }
+                }
+                else {
+                    console.error("(logic.js) - Player does not have enough points!");
+                }
+            } else {
+                console.error("(logic.js) - Player null!");
             }
-            else {
-                console.error("(logic.js) - Player does not have enough points!");
-            }
-        } else {
-            console.error("(logic.js) - Player null!");
+        }
+        else {
+            console.error("(logic.js) - Request denied, game waiting to started!");
         }
     }
 
@@ -140,6 +146,12 @@ class Logic {
     }
 
     async runGame() {
+        while (this.countdown > 0){
+            console.log("Game Starts in: " + this.countdown);
+            await this.waitForTick();
+            this.countdown = this.countdown - 1;
+            this.updatePlayers();
+        }
         while (this.turn < this.maxTurns) {
             await this.waitForTick();
             this.calculateTurn();
@@ -184,6 +196,7 @@ class Logic {
                 client.emit('state', {
                     tickRate: this.TICK_RATE,
                     gridSize: this.GRID_SIZE,
+                    countdown: this.countdown,
                     timeRemaining: this.maxTurns - this.turn,
                     clients: this.getPlayers(),
                     resources: this.grid.getResources()
