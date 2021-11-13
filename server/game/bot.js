@@ -7,8 +7,6 @@ class Bot {
 
         this.pos = pos;
         this.path = [];
-
-        this.dying = false;
     }
 
     hasDestination(){

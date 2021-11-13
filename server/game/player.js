@@ -5,7 +5,7 @@ class Player {
         this.id = id;
         this.sockets = []
         this.sockets.push(socket)
-        this.points = 0;
+        this.points = 20;
         this.color = color;
         this.bots = [];
         this.spawnCD = 0;
@@ -30,6 +30,7 @@ class Player {
             }
 
             result.push({
+                id: bot.id,
                 current: {
                     x: bot.pos[0],
                     y: bot.pos[1]

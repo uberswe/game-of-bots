@@ -1,5 +1,6 @@
 const Player = require('./player');
 const Grid = require('./grid');
+const { CleanPlugin } = require('webpack');
 
 class Logic {
     constructor(p) {
@@ -13,8 +14,9 @@ class Logic {
         });
 
         this.grid = new Grid(this.GRID_SIZE, this.GRID_SIZE);
+        this.countdown = 30;
         this.turn = 0;
-        this.maxTurns = 100;
+        this.maxTurns = 600;
 
         this.botID = 0; // unique id, increments with each bot spawned
         this.reservedSpawn = {}; // dict{[x, y], player}
@@ -57,24 +59,35 @@ class Logic {
 
     requestBotSpawn(user) {
         // Get the requesting users player in-game
-        let player = null;
-        this.players.forEach(p => {
-            if (p.id === user.clientId) {
-                player = p;
-            }
-        });
+        if (this.countdown < 1){
+            let player = null;
+            this.players.forEach(p => {
+                if (p.id === user.clientId) {
+                    player = p;
+                }
+            });
 
-        if (player != null) {
-            // Attempt to find a free location to spawn the bot
-            let coord = this.grid.getAvailableSpawnTile(this.reservedSpawn);
+            if (player != null) {
+                if (player.points >= 5){
+                    // Attempt to find a free location to spawn the bot
+                    let coord = this.grid.getAvailableSpawnTile(this.reservedSpawn);
 
-            if (coord != null) {
-                this.reservedSpawn[coord.x + "," + coord.y] = player;
+                    if (coord != null) {
+                        this.reservedSpawn[coord.x + "," + coord.y] = player;
+                        player.points = player.points - 5;
+                    } else {
+                        console.error("(logic.js) - Free spawn location not found!");
+                    }
+                }
+                else {
+                    console.error("(logic.js) - Player does not have enough points!");
+                }
             } else {
-                console.error("(logic.js) - Free spawn location not found!");
+                console.error("(logic.js) - Player null!");
             }
-        } else {
-            console.error("(logic.js) - Player null!");
+        }
+        else {
+            console.error("(logic.js) - Request denied, game waiting to started!");
         }
     }
 
@@ -96,33 +109,49 @@ class Logic {
     activateBots() {
         let bots = [];
 
-        // Moves all bots, then checks collisions
+        this.players.forEach(player => {
+            player.bots.forEach(bot => {
+                bots.push(bot);
+            });
+        });
+
+        let collided = [];
+        // Check to see if bots share a space
+        bots.forEach(bot => {
+            for (let i = 0; i < bots.length; i++){
+                if (bot.pos == bots[i].pos && bot.id != bots[i].id){
+                    collided.push(bot);
+                }
+            }
+        });
+
+        collided.forEach(collision => {
+            this.players.forEach(player => {
+                player.bots.forEach(bot => {
+                    if (bot.id == collision.id)
+                    player.deleteBot(collision);
+                });
+            });
+        });
+
+        // Moves all bots
         this.players.forEach(player => {
             player.bots.forEach(bot => {
                 let value = this.grid.activateBot(bot);
                 if (value > 0){ // Add any resource points collected
                     player.points = player.points + value;
                 }
-                if (bot.dying){
-                    player.deleteBot(bot);
-                }
-                else {
-                    bots.push(bot);
-                }
             });
-        });
-
-        // Check to see if bots share a space
-        bots.forEach(bot => {
-            for (let i = 0; i < bots.length; i++){
-                if (bot.pos == bots[i].pos && bot.id != bots[i].id){
-                    bot.dying = true;
-                }
-            }
         });
     }
 
     async runGame() {
+        while (this.countdown > 0){
+            console.log("Game Starts in: " + this.countdown);
+            await this.waitForTick();
+            this.countdown = this.countdown - 1;
+            this.updatePlayers();
+        }
         while (this.turn < this.maxTurns) {
             await this.waitForTick();
             this.calculateTurn();
@@ -167,6 +196,7 @@ class Logic {
                 client.emit('state', {
                     tickRate: this.TICK_RATE,
                     gridSize: this.GRID_SIZE,
+                    countdown: this.countdown,
                     timeRemaining: this.maxTurns - this.turn,
                     clients: this.getPlayers(),
                     resources: this.grid.getResources()
