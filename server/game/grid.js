@@ -35,16 +35,50 @@ class Grid {
         }
     }
 
-    getAvailableSpawnTile(reservedTiles){
-        // Create a pool of the possible spawn
-        let y = this.height - 1;
-        let max_x = this.width;
-
+    getAvailableSpawnTile(reservedTiles, spawnLocation){
         let tilePool = [];
-        for (let x = 0; x < max_x; x++){
-            tilePool.push({ "x":x, "y":y });
+        let y, x, min_x, max_x, min_y, max_y;
+
+        // Create a pool of the possible spawn
+        switch (spawnLocation){
+            case 'N':
+                y = 0;
+                min_x = 3;
+                max_x = this.width - 3;
+
+                for (x = min_x; x < max_x; x++){
+                    tilePool.push({ "x":x, "y":y });
+                }
+                break;
+            case 'E':
+                min_y = 3;
+                max_y = this.height - 3;
+                x = this.width - 1;
+
+                for (y = min_y; y < max_y; y++){
+                    tilePool.push({ "x":x, "y":y });
+                }
+                break;
+            case 'S':
+                y = this.height - 1;
+                min_x = 3;
+                max_x = this.width - 3;
+
+                for (x = min_x; x < max_x; x++){
+                    tilePool.push({ "x":x, "y":y });
+                }
+                break;
+            default:
+                min_y = 3;
+                max_y = this.height - 3;
+                x = 0;
+
+                for (y = min_y; y < max_y; y++){
+                    tilePool.push({ "x":x, "y":y });
+                }
+                break;
         }
-        
+
         // Remove any tiles from the pool already in use
         for (const[k, v] of Object.entries(reservedTiles)){
             let pos = [k.split(',').map(Number)];

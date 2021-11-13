@@ -1,14 +1,14 @@
 const Bot = require('./bot');
 
 class Player {
-    constructor(id, socket, color){
+    constructor(id, socket, color, spawnLoc){
         this.id = id;
         this.sockets = []
         this.sockets.push(socket)
         this.points = 20;
         this.color = color;
         this.bots = [];
-        this.spawnCD = 0;
+        this.spawnLocation = spawnLoc;
     }
 
     addSocket(socket) {
