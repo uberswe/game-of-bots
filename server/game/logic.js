@@ -94,14 +94,31 @@ class Logic {
     }
 
     activateBots() {
-        // TODO: if increased speed implemented, this needs to check hits with each move
+        let bots = [];
+
+        // Moves all bots, then checks collisions
         this.players.forEach(player => {
             player.bots.forEach(bot => {
                 let value = this.grid.activateBot(bot);
                 if (value > 0){ // Add any resource points collected
                     player.points = player.points + value;
                 }
+                if (bot.dying){
+                    player.deleteBot(bot);
+                }
+                else {
+                    bots.push(bot);
+                }
             });
+        });
+
+        // Check to see if bots share a space
+        bots.forEach(bot => {
+            for (let i = 0; i < bots.length; i++){
+                if (bot.pos == bots[i].pos && bot.id != bots[i].id){
+                    bot.dying = true;
+                }
+            }
         });
     }
 
@@ -135,9 +152,6 @@ class Logic {
         }
         // Bot updates
         this.activateBots();
-
-        // Bot check if on top of resource or colliding
-        //console.log("(logic.js) - TODO: Check if bot is on resource.");
 
         this.turn++;
     }
