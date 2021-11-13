@@ -31,7 +31,7 @@ class Logic {
     }
 
     addPlayer(player) {
-        this.players.push(new Player(player.clientId, player.sock, this.assignColor()));
+        this.players.push(new Player(player.clientId, player.sock, this.assignColor(), this.assignSpawn()));
 
         // This listens to the button clicks on the front end
         player.sock.on('button', (obj) => {
@@ -50,7 +50,7 @@ class Logic {
             result.push({
                 points: player.points,
                 color: player.color,
-                cooldown: player.spawnCD,
+                spawnLocation: player.spawnLocation,
                 bots: player.getBots()
             })
         })
@@ -70,7 +70,7 @@ class Logic {
             if (player != null) {
                 if (player.points >= 5){
                     // Attempt to find a free location to spawn the bot
-                    let coord = this.grid.getAvailableSpawnTile(this.reservedSpawn);
+                    let coord = this.grid.getAvailableSpawnTile(this.reservedSpawn, player.spawnLocation);
 
                     if (coord != null) {
                         this.reservedSpawn[coord.x + "," + coord.y] = player;
@@ -203,6 +203,22 @@ class Logic {
                 });
             });
         });
+    }
+
+    assignSpawn() {
+        let position = this.players.length % 4;
+        // Assign according to amount of current players
+        // order to assign: N, E, S, W
+        switch(position){
+            case 1:
+                return 'E';
+            case 2:
+                return 'S';
+            case 3:
+                return 'W';
+            default:
+                return 'N';
+        }
     }
 
     assignColor() {
