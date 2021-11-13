@@ -35,9 +35,13 @@ export class Client {
     }
 
     message(channel, obj) {
-        obj.clientID = this.state.getUserID()
+        obj.clientId = this.state.getUserID()
         console.log("sent on channel \"" + channel + "\" with data", obj)
         this.sock.emit(channel, obj);
+    }
+
+    disconnect() {
+        this.sock.disconnect()
     }
 
     // Takes a function like func(obj)

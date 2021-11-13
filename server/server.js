@@ -89,6 +89,7 @@ io.on('connection', (sock) => {
                             }
                         }
                         if (!playerFound) {
+                            console.log(obj)
                             games[gi].addPlayer({ sock: sock, clientId: obj.clientId })
                         }
                     }

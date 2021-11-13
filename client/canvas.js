@@ -61,7 +61,6 @@ export class Canvas {
 
         // Draw the bots
         obj.clients.forEach(function (client) {
-            // TODO get the client color
             client.bots.forEach(function (bot) {
                 let found = false
                 bots.forEach(function (existing) {
@@ -71,7 +70,7 @@ export class Canvas {
                 })
                 // draw the resource one time
                 if (!found) {
-                    bots.push(new Bot(0, [bot.current.x, bot.current.y], ctx, tileSize))
+                    bots.push(new Bot(0, [bot.current.x, bot.current.y], ctx, tileSize, client.color))
                 }
             })
         })
