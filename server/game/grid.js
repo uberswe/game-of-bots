@@ -101,11 +101,13 @@ class Grid {
     }
 
     activateBot(bot){
+        if (bot.dying){
+            return;
+        }
+
         if (bot.hasDestination()){
-            // Move along the path and check for collisions
-            this.grid[bot.pos].occupied = false;
+            // Move along the path
             bot.move();
-            this.grid[bot.pos].occupied = true;
         }
         else {
             // Check if bot on resource

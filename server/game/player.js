@@ -47,6 +47,15 @@ class Player {
     addBot(id, pos){
         this.bots.push(new Bot(id, pos));
     }
+
+    deleteBot(bot){
+        for (let i = 0; i < this.bots.length; i++){
+            if (bot.id == this.bots[i].id){
+                this.bots.splice(i, 1);
+                return;
+            }
+        }
+    }
 }
 
 module.exports = Player;
