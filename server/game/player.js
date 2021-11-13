@@ -5,7 +5,7 @@ class Player {
         this.id = id;
         this.sockets = []
         this.sockets.push(socket)
-        this.points = 0;
+        this.points = 20;
         this.color = color;
         this.bots = [];
         this.spawnCD = 0;
