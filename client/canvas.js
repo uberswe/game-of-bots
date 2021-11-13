@@ -1,6 +1,6 @@
 import Tile from './tile'
 import { Resource } from './resource'
-import { coordToPos } from './util'
+import {coordToPos, uuidv4} from './util'
 import { Bot } from './bot'
 
 export class Canvas {
@@ -32,7 +32,24 @@ export class Canvas {
     }
 
     drawBots() {
+        let bots = this.bots
         let tileSize = this.tileSize
+        this.bots.forEach(function (bot) {
+            if (!bot.drawn) {
+                bots.forEach(function (bot2, index) {
+                    if (bot.id !== bot2.id && bot.coord[0] === bot2.coord[0] && bot.coord[1] === bot2.coord[1]) {
+                        console.log("COLLISION DETECTED!")
+                        bot.isColliding = true
+                        bot.colors.push(bot2.color)
+                        // Prevent the colliding bot from being drawn
+                        bots[index].drawn = true
+                    }
+                })
+            }
+        })
+
+        this.bots = bots
+
         this.bots.forEach(function (bot) {
             bot.draw(tileSize)
         })
@@ -50,7 +67,7 @@ export class Canvas {
         let ctx = this.ctx
         let tileSize = this.tileSize
         let resources = this.resources
-        let bots = this.bots
+        let bots = []
 
         // Draw the grid if gridSize has changed
         if (this.gridSize !== obj.gridSize) {
@@ -62,34 +79,8 @@ export class Canvas {
         // Draw the bots
         obj.clients.forEach(function (client) {
             client.bots.forEach(function (bot) {
-                let found = false
-                bots.forEach(function (existing) {
-                    if (existing.coord[0] === bot.current.x && existing.coord[1] === bot.current.y) {
-                        found = true
-                    }
-                })
-                // draw the resource one time
-                if (!found) {
-                    bots.push(new Bot(0, [bot.current.x, bot.current.y], ctx, tileSize, client.color))
-                }
+                bots.push(new Bot(bot.id, [bot.current.x, bot.current.y], ctx, tileSize, client.color))
             })
-        })
-
-        this.bots = bots
-
-        // remove bots not in state
-        this.bots.forEach(function (existing, i) {
-            let found = false
-            obj.clients.forEach(function (client) {
-                client.bots.forEach(function (bot) {
-                    if (bot.current.x === existing.coord[0] && bot.current.y === existing.coord[1]) {
-                        found = true
-                    }
-                })
-            })
-            if (!found) {
-                delete bots[i]
-            }
         })
 
         this.bots = bots
