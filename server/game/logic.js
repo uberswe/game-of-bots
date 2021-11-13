@@ -1,6 +1,5 @@
 const Player = require('./player');
 const Grid = require('./grid');
-const Bot = require('./bot');
 
 class Logic {
     constructor(p) {
@@ -98,7 +97,10 @@ class Logic {
         // TODO: if increased speed implemented, this needs to check hits with each move
         this.players.forEach(player => {
             player.bots.forEach(bot => {
-                this.grid.activateBot(bot);
+                let value = this.grid.activateBot(bot);
+                if (value > 0){ // Add any resource points collected
+                    player.points = player.points + value;
+                }
             });
         });
     }

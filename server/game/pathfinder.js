@@ -3,39 +3,109 @@ class Pathfinder {
 
     }
 
-    calculatePath(pos, dest){
-        // Find the path from position to their destination
-        let path = [];
+    findPath(w, h, grid, pos, dest){
+        this.width = w;
+        this.height = h;
 
-        for (let y = pos[1]; y >= dest[1]; y--){
-            path.push([pos[0], y]);
+        this.grid = grid; // dict{[x,y], Tile}
+
+        // Clear all of the tile values in order to use again
+        for (const[k, v] of Object.entries(this.grid)){
+            v.gCost = 'undefined';
+            v.hCost = 'undefined';
+            v.parent = 'undefined';
         }
 
-        return path;
+        return this.calculatePath(pos, dest);
     }
 
-    /*
-    OPEN // set of nodes to be evaluated
-    CLOSED // set of nodes already evaluated
+    calculatePath(start, target){
+        let openSet = [];
+        let closedSet = [];
+        openSet.push(start);
 
-    loop
-        current = node in OPEN with the lowest f_cost
-        remove current from OPEN
-        add current to CLOSED
+        while (openSet.length > 0){
+            let currentTile = openSet[0];
 
-        if current is the target node
-            return
-        
-        foreach neighbour of the current node
-            if neighbour is not traversable or neighbour is in CLOSED
-                skip to the next neighbour
-            
-            if new path to neighbour is shorter OR neighbour is not in OPEN
-                set f_cost of neighbour
-                set parent of neighbour to current
-                if neighbour is not in OPEN
-                    add neighbour to OPEN
-    */
+            for (let i = 1; i < openSet.length; i++){
+                if (openSet[i].fCost < currentTile.fCost || openSet[i].fCost == currentTile.fCost && openSet[i].hCost < currentTile.hCost){
+                    currentTile = openSet[i];
+                }
+            }
+
+            // Remove currentTile from openSet
+            for (let i = 0; i < openSet.length; i++){
+                if (openSet[i] === currentTile){
+                    openSet.splice(i, 1);
+                }
+            }
+
+            closedSet.push(currentTile);
+
+            if (currentTile == target){
+                return this.retracePath(start, target);
+            }
+
+            this.getNeighbours(currentTile).forEach(neighbour => {
+                if (!neighbour.walkable || closedSet.includes(neighbour)){
+                    return;
+                }
+
+                let newMovementCostToNeighbour = currentTile.gCost + this.getDistance(currentTile, neighbour);
+                if (newMovementCostToNeighbour < neighbour.gCost || !openSet.includes(neighbour)){
+                    neighbour.gCost = newMovementCostToNeighbour;
+                    neighbour.hCost = this.getDistance(neighbour, target);
+                    neighbour.parent = currentTile;
+
+                    if (!openSet.includes(neighbour)){
+                        openSet.push(neighbour);
+                    }
+                }
+            });
+        }
+    }
+
+    retracePath(start, target){
+        let path = [];
+        let currentTile = target;
+
+        while (currentTile != start){
+            path.push(currentTile);
+            currentTile = currentTile.parent;
+        }
+
+        return path.reverse();
+    }
+
+    getNeighbours(tile){
+        let neighbours = [];
+
+        for (let x = -1; x <= 1; x++){
+            for (let y = -1; y <= 1; y++){
+                if (x == 0 && y == 0)
+                    continue;
+
+                let checkX = tile.coord[0] + x;
+                let checkY = tile.coord[1] + y;
+
+                if (checkX >= 0 && checkX < this.width && checkY >= 0 && checkY < this.height){
+                    neighbours.push(this.grid[[checkX, checkY]]);
+                }
+            }
+        }
+
+        return neighbours;
+    }
+
+    getDistance(tileA, tileB){
+        let distX = Math.abs(tileA.coord[0] - tileB.coord[0]);
+        let distY = Math.abs(tileA.coord[1] - tileB.coord[1]);
+
+        if (distX > distY){
+            return 14 * distY + 10 * (distX - distY);
+        }
+        return 14 * distX + 10 * (distY - distX);
+    }
 }
 
 module.exports = Pathfinder;
