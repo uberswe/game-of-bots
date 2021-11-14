@@ -16,6 +16,7 @@
 
 .canvas-container {
     width: 80%;
+    max-width: 800px;
     float: left;
 }
 

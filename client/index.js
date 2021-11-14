@@ -11,7 +11,6 @@ let gameStarted = false
 let state = new State()
 
 const ic = document.getElementById('intro-component');
-
 const gc = document.getElementById('game-component');
 
 const playGame = document.getElementById('playGame');
@@ -56,15 +55,6 @@ function startGame() {
         if (client !== undefined) {
             client.message("button", {
                 "click": "deploy"
-            })
-        }
-    });
-
-    const turnBot = document.getElementById('turnBot');
-    turnBot.addEventListener('click', function (e) {
-        if (client !== undefined) {
-            client.message("button", {
-                "click": "turn"
             })
         }
     });
