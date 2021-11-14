@@ -23,7 +23,6 @@ class Logic {
 
         // Buildup (1 per player per tick)
         this.resourceBuildup = 0;
-        // When Buildup above cap (spawn resources as long as you can subract cap from buildup)
         this.resourceBuildupCap = 5;
 
         // Emit initial message and start the game!
@@ -177,8 +176,10 @@ class Logic {
     calculateTurn() {
         console.log("Turn processing...");
         // Spawn Resources
-        if (this.turn % 5 === 0) {
-            this.grid.spawnResource(0);
+        this.resourceBuildup = this.resourceBuildup + this.players.length;
+        while (this.resourceBuildup / this.resourceBuildupCap > 0){
+            this.grid.requestSpawnResource();
+            this.resourceBuildup = this.resourceBuildup - this.resourceBuildupCap;
         }
         // Spawn bots
         if (Object.keys(this.reservedSpawn).length > 0) {

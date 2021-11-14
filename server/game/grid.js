@@ -109,6 +109,11 @@ class Grid {
         return null;
     }
 
+    requestSpawnResource(){
+        let count = 0;
+        this.spawnResource(count);
+    }
+
     spawnResource(count){
         if (count < 5) {
 
