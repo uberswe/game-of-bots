@@ -14,9 +14,9 @@ class Logic {
         });
 
         this.grid = new Grid(this.GRID_SIZE, this.GRID_SIZE);
-        this.countdown = 3;
+        this.countdown = 30;
         this.turn = 0;
-        this.maxTurns = 30;
+        this.maxTurns = 600;
 
         this.botID = 0; // unique id, increments with each bot spawned
         this.reservedSpawn = {}; // dict{[x, y], player}
