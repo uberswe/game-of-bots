@@ -37,8 +37,8 @@ export class Canvas {
         this.bots.forEach(function (bot) {
             if (!bot.drawn) {
                 bots.forEach(function (bot2, index) {
+                    // Detecting collisions of 2 or more bots
                     if (bot.id !== bot2.id && bot.coord[0] === bot2.coord[0] && bot.coord[1] === bot2.coord[1]) {
-                        console.log("COLLISION DETECTED!")
                         bot.isColliding = true
                         bot.colors.push(bot2.color)
                         // Prevent the colliding bot from being drawn

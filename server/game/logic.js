@@ -35,16 +35,7 @@ class Logic {
     }
 
     addPlayer(player) {
-        this.players.push(new Player(player.clientId, player.sock, this.assignColor(), this.assignSpawn()));
-
-        // This listens to the button clicks on the front end
-        player.sock.on('button', (obj) => {
-            if (obj.hasOwnProperty("click")) {
-                if (obj.click === "deploy") {
-                    this.requestBotSpawn(player);
-                }
-            }
-        })
+        this.players.push(new Player(player.clientId, player.sock, this.assignColor(), this.assignSpawn(), this));
     }
 
     // constructor for 'state' update
@@ -66,7 +57,7 @@ class Logic {
         if (this.countdown < 1){
             let player = null;
             this.players.forEach(p => {
-                if (p.id === user.clientId) {
+                if (p.id === user.id) {
                     player = p;
                 }
             });
@@ -197,6 +188,8 @@ class Logic {
     }
 
     updatePlayers() {
+        let players = this.getPlayers()
+        let resources = this.grid.getResources()
         this.players.forEach(player => {
             player.sockets.forEach(client => {
                 client.emit('state', {
@@ -204,8 +197,8 @@ class Logic {
                     gridSize: this.GRID_SIZE,
                     countdown: this.countdown,
                     timeRemaining: this.maxTurns - this.turn,
-                    clients: this.getPlayers(),
-                    resources: this.grid.getResources()
+                    clients: players,
+                    resources: resources
                 });
             });
         });

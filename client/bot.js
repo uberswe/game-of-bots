@@ -34,7 +34,6 @@ export class Bot {
 
     drawColliding(tileSize) {
         this.tileSize = tileSize
-        console.log("drawing collision")
         let coord = coordToPos(this.coord[0], this.coord[1], tileSize)
         let w = this.tileSize[0]
         let h = this.tileSize[1]

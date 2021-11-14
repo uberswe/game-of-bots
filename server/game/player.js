@@ -1,17 +1,26 @@
 const Bot = require('./bot');
 
 class Player {
-    constructor(id, socket, color, spawnLoc){
+    constructor(id, socket, color, spawnLoc, logic){
         this.id = id;
         this.sockets = []
-        this.sockets.push(socket)
         this.points = 20;
         this.color = color;
         this.bots = [];
         this.spawnLocation = spawnLoc;
+        this.logic = logic
+        this.addSocket(socket)
     }
 
     addSocket(socket) {
+        // This listens to the button clicks on the front end
+        socket.on('button', (obj) => {
+            if (obj.hasOwnProperty("click")) {
+                if (obj.click === "deploy") {
+                    this.logic.requestBotSpawn(this);
+                }
+            }
+        })
         this.sockets.push(socket)
     }
 
