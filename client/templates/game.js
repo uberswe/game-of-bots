@@ -5,6 +5,7 @@ class GameComponent extends HTMLElement {
             <div class="canvas-container">
                 <canvas id="canvas" width="750" height="750" class="canvas"></canvas>
                 <br/>
+                <div id="playerColor"></div>
                 <button id="deployBot">Deploy Bot</button>
                 <button id="endGame">Leave Game</button>
                 <h3>How to play?</h3>

@@ -39,14 +39,15 @@ class Logic {
     }
 
     // constructor for 'state' update
-    getPlayers() {
+    getPlayers(p) {
         let result = [];
         this.players.forEach(player => {
             result.push({
                 points: player.points,
                 color: player.color,
                 spawnLocation: player.spawnLocation,
-                bots: player.getBots()
+                bots: player.getBots(),
+                self: player.id === p.id
             })
         })
         return result;
@@ -188,9 +189,9 @@ class Logic {
     }
 
     updatePlayers() {
-        let players = this.getPlayers()
         let resources = this.grid.getResources()
         this.players.forEach(player => {
+            let players = this.getPlayers(player)
             player.sockets.forEach(client => {
                 client.emit('state', {
                     tickRate: this.TICK_RATE,
