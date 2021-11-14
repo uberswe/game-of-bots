@@ -14,7 +14,7 @@ class Logic {
         });
 
         this.grid = new Grid(this.GRID_SIZE, this.GRID_SIZE);
-        this.countdown = 30;
+        this.countdown = 1;
         this.turn = 0;
         this.maxTurns = 600;
 

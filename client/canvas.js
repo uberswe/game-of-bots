@@ -29,6 +29,7 @@ export class Canvas {
     // Clear removes everything on the canvas
     clear() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.save()
     }
 
     drawBots() {
@@ -38,7 +39,7 @@ export class Canvas {
             if (!bot.drawn) {
                 bots.forEach(function (bot2, index) {
                     // Detecting collisions of 2 or more bots
-                    if (bot.id !== bot2.id && bot.coord[0] === bot2.coord[0] && bot.coord[1] === bot2.coord[1]) {
+                    if (bot.id !== bot2.id && bot.x === bot2.x && bot.y === bot2.y) {
                         bot.isColliding = true
                         bot.colors.push(bot2.color)
                         // Prevent the colliding bot from being drawn
@@ -79,7 +80,7 @@ export class Canvas {
         // Draw the bots
         obj.clients.forEach(function (client) {
             client.bots.forEach(function (bot) {
-                bots.push(new Bot(bot.id, [bot.current.x, bot.current.y], ctx, tileSize, client.color))
+                bots.push(new Bot(bot.id, bot.current.x, bot.current.y, bot.movingTo.x, bot.movingTo.y, ctx, tileSize, client.color))
             })
         })
 
@@ -118,8 +119,8 @@ export class Canvas {
 
         // Draw
         this.clear()
-        this.drawGrid()
         this.drawBots()
+        this.drawGrid()
         this.drawResources()
     }
 

@@ -3,19 +3,25 @@ import {coordToPos} from "./util";
 export class Bot {
     ctx
     id
-    coord
+    x
+    y
+    movingToX
+    movingToY
     tileSize
     color
     colors
     isColliding
     drawn
 
-    constructor(id, coord, ctx, tileSize, color) {
+    constructor(id, x, y, movingToX, movingToY, ctx, tileSize, color) {
         this.id = id;
         this.color = color
         this.colors = [color]
         this.isColliding = false
-        this.coord = coord;
+        this.x = x
+        this.y = y
+        this.movingToX = movingToX
+        this.movingToY = movingToY
         this.ctx = ctx;
         this.tileSize = tileSize
         this.drawn = false
@@ -34,7 +40,7 @@ export class Bot {
 
     drawColliding(tileSize) {
         this.tileSize = tileSize
-        let coord = coordToPos(this.coord[0], this.coord[1], tileSize)
+        let coord = coordToPos(this.x, this.y, tileSize)
         let w = this.tileSize[0]
         let h = this.tileSize[1]
         let x = coord[0]
@@ -76,7 +82,7 @@ export class Bot {
 
     drawMoving(tileSize) {
         this.tileSize = tileSize
-        let coord = coordToPos(this.coord[0], this.coord[1], this.tileSize)
+        let coord = coordToPos(this.x, this.y, this.tileSize)
         let w = this.tileSize[0]
         let h = this.tileSize[1]
         let x = coord[0]
@@ -84,18 +90,28 @@ export class Bot {
         // Trapazoid
         w = w - w / 3
         h = h - h / 3
-        this.ctx.beginPath();
-        this.ctx.moveTo((x - w / 2) + (w / 8), y - h / 2);
-        this.ctx.lineTo((x + w / 2) - (w / 8), y - h / 2);
-        this.ctx.lineTo(x + w / 2, y + h / 2);
-        this.ctx.lineTo(x - w / 2, y + h / 2);
-        this.ctx.lineTo((x - w / 2) + (w / 8), y - h / 2);
+        let angleRadians = 1.571
+
+        if (typeof this.movingToY !== "undefined" && typeof this.movingToX !== "undefined") {
+            angleRadians += Math.atan2(this.movingToY - this.y, this.movingToX - this.x);
+        }
+
+        this.ctx.translate(x, y)
+        this.ctx.rotate(angleRadians)
+        this.ctx.beginPath()
+        this.ctx.moveTo((-w / 2) + (w / 8), -h / 2);
+        this.ctx.lineTo((w / 2) - (w / 8), -h / 2);
+        this.ctx.lineTo(w / 2, h / 2);
+        this.ctx.lineTo(-w / 2, h / 2);
+        this.ctx.lineTo((-w / 2) + (w / 8), -h / 2);
         this.ctx.lineWidth = 1
+        this.ctx.strokeStyle = this.color
+        this.ctx.stroke()
         this.ctx.fillStyle = this.color
         this.ctx.fill();
-        this.ctx.strokeStyle = this.color;
-        this.ctx.stroke();
-        this.ctx.closePath();
+        this.ctx.restore()
+        this.ctx.save()
+
     }
 
     move(x, y) {
