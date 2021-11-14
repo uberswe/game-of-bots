@@ -29,9 +29,9 @@ class Player {
         let result = [];
         this.bots.forEach(bot => {
             let destX, destY;
-            if (typeof bot.path !== 'undefined'){
-                destX = bot.path[0];
-                destY = bot.path[1];
+            if (typeof bot.path !== 'undefined' && bot.path.length > 0 && typeof bot.path[0] !== 'undefined' && typeof bot.path[0].coord !== 'undefined'){
+                destX = bot.path[0].coord[0];
+                destY = bot.path[0].coord[1];
             }
             else {
                 destX = 0;
