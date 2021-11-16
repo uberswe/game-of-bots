@@ -160,6 +160,7 @@ class Grid {
                     let value = v.value;
                     // remove resource
                     delete this.resources[k];
+                    this.grid[[x, y]].occupied = false;
                     // return the value to give to player
                     return value;
                 }
