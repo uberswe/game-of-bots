@@ -34,8 +34,8 @@ class Player {
                 destY = bot.path[0].coord[1];
             }
             else {
-                destX = 0;
-                destY = 0;
+                destX = bot.pos[0];
+                destY = bot.pos[1];
             }
 
             result.push({
