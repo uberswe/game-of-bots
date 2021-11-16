@@ -14,16 +14,10 @@ export class Canvas {
 
     constructor() {
         this.update = this.update.bind(this)
+        this.drawLoop = this.drawLoop.bind(this)
         this.canvas = document.getElementById('canvas');
         this.ctx = this.canvas.getContext('2d');
-    }
-
-    drawGrid() {
-        for (let x = 0; x < this.gridSize; x++){
-            for (let y = 0; y < this.gridSize; y++){
-                this.grid.push(new Tile([x, y], coordToPos(x, y, this.tileSize), [this.tileSize[0], this.tileSize[1]], this.ctx));
-            }
-        }
+        this.drawLoop()
     }
 
     // Clear removes everything on the canvas
@@ -35,25 +29,10 @@ export class Canvas {
     drawBots() {
         let bots = this.bots
         let tileSize = this.tileSize
-        this.bots.forEach(function (bot) {
-            if (!bot.drawn) {
-                bots.forEach(function (bot2, index) {
-                    // Detecting collisions of 2 or more bots
-                    if (bot.id !== bot2.id && bot.x === bot2.x && bot.y === bot2.y) {
-                        bot.isColliding = true
-                        bot.colors.push(bot2.color)
-                        // Prevent the colliding bot from being drawn
-                        bots[index].drawn = true
-                    }
-                })
-            }
+        bots.forEach(function (bot, index) {
+           bots[index].draw(tileSize)
         })
-
         this.bots = bots
-
-        this.bots.forEach(function (bot) {
-            bot.draw(tileSize)
-        })
     }
 
     drawResources() {
@@ -84,7 +63,19 @@ export class Canvas {
             })
         })
 
-        this.bots = bots
+        bots.forEach(function (bot) {
+            if (!bot.drawn) {
+                bots.forEach(function (bot2, index) {
+                    // Detecting collisions of 2 or more bots
+                    if (bot.id !== bot2.id && bot.x === bot2.x && bot.y === bot2.y) {
+                        bot.isColliding = true
+                        bot.colors.push(bot2.color)
+                        // Prevent the colliding bot from being drawn
+                        bots[index].drawn = true
+                    }
+                })
+            }
+        })
 
         // Draw the resources
         obj.resources.forEach(function (coord) {
@@ -100,10 +91,8 @@ export class Canvas {
             }
         })
 
-        this.resources = resources
-
         // remove resources not in state
-        this.resources.forEach(function (existing, i) {
+        resources.forEach(function (existing, i) {
             let found = false
             obj.resources.forEach(function (coord) {
                 if (existing.coord[0] === coord.x && existing.coord[1] === coord.y) {
@@ -115,13 +104,16 @@ export class Canvas {
             }
         })
 
+        this.bots = bots
         this.resources = resources
+    }
 
-        // Draw
+    drawLoop() {
         this.clear()
-        this.drawBots()
-        this.drawGrid()
         this.drawResources()
+        this.drawBots()
+        this.ctx.restore()
+        requestAnimationFrame(this.drawLoop)
     }
 
 

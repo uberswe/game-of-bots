@@ -12,6 +12,7 @@ export class Bot {
     colors
     isColliding
     drawn
+    time = 0
 
     constructor(id, x, y, movingToX, movingToY, ctx, tileSize, color) {
         this.id = id;
@@ -32,10 +33,9 @@ export class Bot {
             return
         } else if (this.isColliding) {
             this.drawColliding(tileSize)
-        } else {
-            this.drawMoving(tileSize)
+            return
         }
-        this.drawn = true
+        this.drawMoving(tileSize)
     }
 
     drawColliding(tileSize) {
@@ -81,8 +81,18 @@ export class Bot {
     }
 
     drawMoving(tileSize) {
+        if (this.time === 0) {
+            this.time = Date.now()
+        }
         this.tileSize = tileSize
         let coord = coordToPos(this.x, this.y, this.tileSize)
+        let mcoord = coordToPos(this.movingToX, this.movingToY, this.tileSize)
+        let per = (Date.now() - this.time) / 1000
+        let angleRadians = 1.571
+        if (mcoord[0] > 15 && mcoord[1] > 15) {
+            coord = [coord[0] + (mcoord[0] - coord[0]) * per, coord[1] + (mcoord[1] - coord[1]) * per]
+            angleRadians += Math.atan2(mcoord[1] - coord[1], mcoord[0] - coord[0]);
+        }
         let w = this.tileSize[0]
         let h = this.tileSize[1]
         let x = coord[0]
@@ -90,11 +100,7 @@ export class Bot {
         // Trapazoid
         w = w - w / 3
         h = h - h / 3
-        let angleRadians = 1.571
 
-        if (typeof this.movingToY !== "undefined" && typeof this.movingToX !== "undefined") {
-            angleRadians += Math.atan2(this.movingToY - this.y, this.movingToX - this.x);
-        }
 
         this.ctx.translate(x, y)
         this.ctx.rotate(angleRadians)
