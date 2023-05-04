@@ -2,8 +2,6 @@
 
 Game of Bots is a web based multiplayer game. There is a better description with screenshots coming soon :)
 
-A demo is available here: [https://www.bouncegaming.com/](https://www.bouncegaming.com/)
-
 ---
 ## Docker
 
